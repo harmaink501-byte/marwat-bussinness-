@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Marwat Business</title>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#f4f6f8;
+    color:#172033;
+}
+
+nav{
+    background:#111827;
+    color:white;
+    padding:15px 18px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.logo{
+    font-size:20px;
+    font-weight:bold;
+}
+
+button{
+    cursor:pointer;
+}
+
+.nav-btn{
+    border:0;
+    padding:9px 12px;
+    border-radius:8px;
+    background:#2563eb;
+    color:white;
+}
+
+.hero{
+    text-align:center;
+    padding:60px 20px;
+    background:white;
+}
+
+.hero h1{
+    font-size:35px;
+}
+
+.hero p{
+    color:#64748b;
+}
+
+.section{
+    max-width:1000px;
+    margin:auto;
+    padding:35px 20px;
+}
+
+.section h2{
+    text-align:center;
+}
+
+.products{
+    display:grid;
+    grid-template-columns:
+    repeat(auto-fit,minmax(220px,1fr));
+    gap:20px;
+    margin-top:25px;
+}
+
+.card{
+    background:white;
+    border-radius:14px;
+    overflow:hidden;
+    box-shadow:0 5px 18px rgba(0,0,0,.08);
+}
+
+.card img{
+    width:100%;
+    height:170px;
+    object-fit:cover;
+}
+
+.content{
+    padding:17px;
+}
+
+.price{
+    color:#2563eb;
+    font-size:20px;
+    font-weight:bold;
+    margin:10px 0;
+}
+
+.add{
+    width:100%;
+    border:0;
+    padding:11px;
+    border-radius:8px;
+    background:#16a34a;
+    color:white;
+}
+
+#admin{
+    display:none;
+    background:white;
+    padding:25px 20px;
+    max-width:700px;
+    margin:20px auto;
+    border-radius:14px;
+}
+
+input{
+    width:100%;
+    padding:12px;
+    margin:7px 0;
+    border:1px solid #ccd3dc;
+    border-radius:8px;
+}
+
+.admin-btn{
+    width:100%;
+    padding:12px;
+    border:0;
+    border-radius:8px;
+    background:#111827;
+    color:white;
+    margin-top:8px;
+}
+
+.delete{
+    background:#dc2626;
+    color:white;
+    border:0;
+    padding:7px 10px;
+    border-radius:6px;
+    margin-top:8px;
+}
+
+#cart{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:white;
+    z-index:20;
+    padding:20px;
+    overflow:auto;
+}
+
+.cart-item{
+    padding:14px 0;
+    border-bottom:1px solid #ddd;
+}
+
+.close{
+    background:#dc2626;
+    color:white;
+    border:0;
+    padding:9px 12px;
+    border-radius:7px;
+}
+
+.order{
+    width:100%;
+    padding:14px;
+    border:0;
+    border-radius:9px;
+    background:#16a34a;
+    color:white;
+    font-size:17px;
+}
+
+.contact{
+    text-align:center;
+    background:#111827;
+    color:white;
+    padding:40px 20px;
+}
+
+footer{
+    text-align:center;
+    padding:15px;
+    background:#080d17;
+    color:#94a3b8;
+}
+</style>
+</head>
+
+<body>
+
+<nav>
+
+<div class="logo">Marwat Business</div>
+
+<div>
+<button class="nav-btn" onclick="openAdmin()">⚙️ Manage</button>
+
+<button class="nav-btn" onclick="openCart()">
+🛒 <span id="count">0</span>
+</button>
+</div>
+
+</nav>
+
+
+<section class="hero">
+
+<h1>Welcome to Marwat Business</h1>
+
+<p>Quality products at great prices.</p>
+
+</section>
+
+
+<section class="section">
+
+<h2>Our Products</h2>
+
+<div class="products" id="products"></div>
+
+</section>
+
+
+<!-- ADMIN -->
+
+<div id="admin">
+
+<h2>Product Manager</h2>
+
+<input id="productName" placeholder="Product name">
+
+<input id="productPrice"
+type="number"
+placeholder="Price">
+
+<input id="productImage"
+placeholder="Image URL">
+
+<button class="admin-btn" onclick="addProduct()">
+Add Product
+</button>
+
+<hr>
+
+<div id="manageList"></div>
+
+</div>
+
+
+<!-- CART -->
+
+<div id="cart">
+
+<button class="close" onclick="closeCart()">
+Close
+</button>
+
+<h2>🛒 Your Cart</h2>
+
+<div id="cartItems"></div>
+
+<h2>
+Total: Rs. <span id="total">0</span>
+</h2>
+
+<button class="order" onclick="orderWhatsApp()">
+Order on WhatsApp
+</button>
+
+</div>
+
+
+<section class="contact">
+
+<h2>Contact Us</h2>
+
+<p>WhatsApp: 03000000000</p>
+
+<p>D.I. Khan, Pakistan</p>
+
+</section>
+
+
+<footer>
+© 2026 Marwat Business
+</footer>
+
+
+<script>
+
+let products =
+JSON.parse(localStorage.getItem("marwatProducts")) || [
+
+{
+name:"Classic Burger",
+price:450,
+image:"https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=600&q=80"
+},
+
+{
+name:"Special Pizza",
+price:900,
+image:"https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=600&q=80"
+},
+
+{
+name:"Samosa",
+price:80,
+image:"https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=600&q=80"
+}
+
+];
+
+let cart=[];
+
+
+function saveProducts(){
+
+localStorage.setItem(
+"marwatProducts",
+JSON.stringify(products)
+);
+
+}
+
+
+function showProducts(){
+
+let box=document.getElementById("products");
+
+box.innerHTML="";
+
+products.forEach((p,i)=>{
+
+box.innerHTML+=`
+
+<div class="card">
+
+<img src="${p.image}">
+
+<div class="content">
+
+<h3>${p.name}</h3>
+
+<div class="price">
+Rs. ${p.price}
+</div>
+
+<button class="add"
+onclick="addToCart(${i})">
+
+Add to Cart
+
+</button>
+
+</div>
+
+</div>
+
+`;
+
+});
+
+showManageList();
+
+}
+
+
+function showManageList(){
+
+let box=document.getElementById("manageList");
+
+box.innerHTML="";
+
+products.forEach((p,i)=>{
+
+box.innerHTML+=`
+
+<div style="padding:10px 0;border-bottom:1px solid #ddd">
+
+<strong>${p.name}</strong>
+
+<br>
+
+Rs. ${p.price}
+
+<br>
+
+<button class="delete"
+onclick="deleteProduct(${i})">
+
+Delete
+
+</button>
+
+</div>
+
+`;
+
+});
+
+}
+
+
+function addProduct(){
+
+let name=
+document.getElementById("productName").value.trim();
+
+let price=
+Number(document.getElementById("productPrice").value);
+
+let image=
+document.getElementById("productImage").value.trim();
+
+if(!name || !price){
+
+alert("Enter product name and price.");
+
+return;
+
+}
+
+if(!image){
+
+image="https://via.placeholder.com/600x400?text=Product";
+
+}
+
+products.push({
+name:name,
+price:price,
+image:image
+});
+
+saveProducts();
+
+showProducts();
+
+document.getElementById("productName").value="";
+document.getElementById("productPrice").value="";
+document.getElementById("productImage").value="";
+
+alert("Product added!");
+
+}
+
+
+function deleteProduct(index){
+
+products.splice(index,1);
+
+saveProducts();
+
+showProducts();
+
+}
+
+
+function openAdmin(){
+
+let admin=document.getElementById("admin");
+
+admin.style.display =
+admin.style.display==="block"
+? "none"
+: "block";
+
+}
+
+
+function addToCart(index){
+
+let p=products[index];
+
+let existing=
+cart.find(x=>x.name===p.name);
+
+if(existing){
+
+existing.qty++;
+
+}else{
+
+cart.push({
+name:p.name,
+price:p.price,
+qty:1
+});
+
+}
+
+updateCart();
+
+alert(p.name+" added!");
+
+}
+
+
+function updateCart(){
+
+let box=document.getElementById("cartItems");
+
+box.innerHTML="";
+
+let total=0;
+let count=0;
+
+cart.forEach((item,i)=>{
+
+let subtotal=
+item.price*item.qty;
+
+total+=subtotal;
+count+=item.qty;
+
+box.innerHTML+=`
+
+<div class="cart-item">
+
+<strong>${item.name}</strong>
+
+<br>
+
+Rs. ${item.price}
+
+<br>
+
+<button onclick="changeQty(${i},-1)">
+−
+</button>
+
+${item.qty}
+
+<button onclick="changeQty(${i},1)">
++
+</button>
+
+= Rs. ${subtotal}
+
+</div>
+
+`;
+
+});
+
+document.getElementById("total").textContent=total;
+
+document.getElementById("count").textContent=count;
+
+}
+
+
+function changeQty(index,amount){
+
+cart[index].qty+=amount;
+
+if(cart[index].qty<=0){
+
+cart.splice(index,1);
+
+}
+
+updateCart();
+
+}
+
+
+function openCart(){
+
+document.getElementById("cart").style.display="block";
+
+}
+
+
+function closeCart(){
+
+document.getElementById("cart").style.display="none";
+
+}
+
+
+function orderWhatsApp(){
+
+if(cart.length===0){
+
+alert("Cart is empty!");
+
+return;
+
+}
+
+let message="Hello! I want to order:%0A%0A";
+
+let total=0;
+
+cart.forEach(item=>{
+
+let subtotal=
+item.price*item.qty;
+
+total+=subtotal;
+
+message+=
+item.name+
+" x "+
+item.qty+
+" = Rs. "+
+subtotal+
+"%0A";
+
+});
+
+message+=
+"%0ATotal = Rs. "+
+total;
+
+let phone="923000000000";
+
+window.open(
+"https://wa.me/"+phone+
+"?text="+message,
+"_blank"
+);
+
+}
+
+
+showProducts();
+
+</script>
+
+</body>
+  </html>
